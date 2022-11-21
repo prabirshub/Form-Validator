@@ -19,36 +19,60 @@ function showSuccess(input) {
 }
 
 //Ckeck email is valid
-function isValidEmail(email) {
+function checkEmail(input) {
   const re =
     /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/
-  return re.test(String(email).toLowerCase())
+  if (re.test(input.value.trim())) {
+    showSuccess(input)
+  } else {
+    showError(input, 'Email is not valid')
+  }
+}
+
+//Check required filds
+function chekRequired(inputArr) {
+  inputArr.forEach(function (input) {
+    if (input.value.trim() === '') {
+      showError(input, `${getFiledName(input)} is required`)
+    } else {
+      showSuccess(input)
+    }
+  })
+}
+
+//Chech input length
+function checkLength(input, min, max) {
+  if (input.value.length < min) {
+    showError(input, `${getFiledName(input)} must be atleast ${min} charactors`)
+  } else if (input.value.length > max) {
+    showError(
+      input,
+      `${getFiledName(input)} must be less than ${max} charactors`
+    )
+  } else {
+    showSuccess(input)
+  }
+}
+
+//Ckeck password match
+function checkPasswordsMatch(input1, input2) {
+  if (input1.value !== input2.value) {
+    showError(input2, 'Password do not match')
+  }
+}
+
+//Get field name
+function getFiledName(input) {
+  return input.id.charAt(0).toUpperCase() + input.id.slice(1)
 }
 
 //Event listener
 from.addEventListener('submit', function (e) {
   e.preventDefault()
 
-  if (username.value === '') {
-    showError(username, 'Username is required')
-  } else {
-    showSuccess(username)
-  }
-  if (email.value === '') {
-    showError(email, 'Email is required')
-  } else if (!isValidEmail(email.value)) {
-    showError(email, 'Not a valid email')
-  } else {
-    showSuccess(email)
-  }
-  if (password.value === '') {
-    showError(password, 'Password is required')
-  } else {
-    showSuccess(password)
-  }
-  if (password2.value === '') {
-    showError(password2, 'Password 2 is required')
-  } else {
-    showSuccess(password2)
-  }
+  chekRequired([username, email, password, password2])
+  checkLength(username, 3, 15)
+  checkLength(password, 6, 25)
+  checkEmail(email)
+  checkPasswordsMatch(password, password2)
 })
